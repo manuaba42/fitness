@@ -1,5 +1,6 @@
 import 'package:fitness/models/category_model.dart';
 import 'package:fitness/models/diet_model.dart';
+import 'package:fitness/models/popular_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -8,10 +9,12 @@ class HomePage extends StatelessWidget {
 
   List<CategoryModel> categories = [];
   List<DietModel> diet = [];
+  List<PopularModel> popular = [];
 
   void _getIntialInfo(){
     categories = CategoryModel.getCategories();
     diet = DietModel.getDiet();
+    popular = PopularModel.getPopular();
   }
 
   @override
@@ -27,9 +30,93 @@ class HomePage extends StatelessWidget {
           _categoriesSection(),
           SizedBox(height: 40,),
           _dietSection(),
-          
+          SizedBox(height: 40,),
+          _popularSection()
         ],
       ),
+    );
+  }
+
+  Column _popularSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 20),
+          child: Text(
+            'Popular',
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.black,
+              fontWeight: FontWeight.w600
+            ),
+          ),
+        ),
+        SizedBox(height: 15,),
+        Container(
+          height: 240,
+          child: ListView.separated(
+            itemCount: popular.length,
+            shrinkWrap: true,
+            padding: EdgeInsets.only(
+              left: 20,
+              right: 20
+            ),
+            separatorBuilder: (context, index) => SizedBox(height: 25,),
+            itemBuilder: (context, index){
+              return Container(
+                height: 100,
+                decoration: BoxDecoration(
+                  color: popular[index].boxIsSelected? Colors.white : Colors.transparent,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: popular[index].boxIsSelected? [
+                    BoxShadow(
+                      color: Color(0xff1D1617).withOpacity(0.07),
+                      offset: Offset(0,10),
+                      blurRadius: 40,
+                      spreadRadius: 0
+                    )
+                  ] : []
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    SvgPicture.asset(popular[index].iconPath,
+                    height: 45,), 
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          popular[index].name,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black,
+                            fontSize: 16
+                          ),
+                        ),
+                        Text(
+                          popular[index].level + ' | ' + popular[index].calorie + ' | ' + popular[index].duration,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xff7B6F72),
+                            fontSize: 13
+                          ),
+                        ),
+                      ],
+                    ),
+                    GestureDetector(
+                      onTap: (){},
+                      child: SvgPicture.asset('assets/icons/button.svg',
+                      width: 30,
+                      height: 30,),
+                    )
+                  ],
+                ),
+              );
+            }),
+        )
+      ],
     );
   }
 
