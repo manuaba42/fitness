@@ -1,4 +1,5 @@
 import 'package:fitness/models/category_model.dart';
+import 'package:fitness/models/diet_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -6,26 +7,119 @@ class HomePage extends StatelessWidget {
   HomePage({super.key});
 
   List<CategoryModel> categories = [];
+  List<DietModel> diet = [];
 
-  void _getCategories(){
+  void _getIntialInfo(){
     categories = CategoryModel.getCategories();
+    diet = DietModel.getDiet();
   }
 
   @override
   Widget build(BuildContext context) {
-    _getCategories();
+    _getIntialInfo();
     return Scaffold(
       appBar: appBar(),
       backgroundColor: Colors.white,
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      body: ListView(
         children: [
           _searchField(),
           SizedBox(height: 40,),
-          _categoriesSection()
+          _categoriesSection(),
+          SizedBox(height: 40,),
+          _dietSection(),
+          
         ],
       ),
     );
+  }
+
+  Column _dietSection() {
+    return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 20),
+            child: Text(
+              'Recommendation \nfor Diet',
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.black,
+                fontWeight: FontWeight.w600
+              ),
+            ),
+          ),
+          SizedBox(height: 15,),
+          Container(
+            height: 240,
+            child: ListView.separated(
+              itemCount: diet.length,
+              scrollDirection: Axis.horizontal,
+              padding: EdgeInsets.only(
+                left: 20,
+                right: 20
+              ),
+              separatorBuilder: (context, index) => SizedBox(width: 25,),
+              itemBuilder: (context, index){
+                return Container(
+                  width: 210,
+                  decoration: BoxDecoration(
+                    color: diet[index].colorBox.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(20)
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      SvgPicture.asset(diet[index].iconPath), 
+                      Column(
+                        children: [
+                          Text(
+                            diet[index].name,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black,
+                              fontSize: 16
+                            ),
+                          ),
+                          Text(
+                            diet[index].level + ' | ' + diet[index].calorie + ' | ' + diet[index].duration,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              color: Color(0xff7B6F72),
+                              fontSize: 13
+                            ),
+                          ),
+                        ],
+                      ),
+                      Container(
+                        height: 45,
+                        width: 130,
+                        child: Center(
+                          child: Text(
+                            'View',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                              fontSize: 14
+                            ),
+                          ),
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              diet[index].viewIsSelected ? Color(0xff92A3FD) : Colors.transparent,
+                              diet[index].viewIsSelected ? Color(0xffC58BF2) : Colors.transparent
+                            ]
+                          ),
+                          borderRadius: BorderRadius.circular(50)
+                        ),
+                      )
+                    ],
+                  ),
+                );
+              }),
+          )
+        ],
+      );
   }
 
   Column _categoriesSection() {
